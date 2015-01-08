@@ -1,0 +1,41 @@
+#!/bin/sh -x
+
+set -e
+
+ROOT=`readlink -m $(dirname $0)`
+
+ROOT=$(pwd)
+
+test -d $ROOT/.git || (echo "Must be launched in GIT repo root"; exit 1)
+
+DIST=$ROOT/.dist
+
+COMMIT=$(git rev-parse HEAD)
+
+REPO=single-commit
+
+rm -Rf $DIST
+mkdir -p $DIST
+
+cd $DIST
+git clone --no-hardlinks --progress --no-checkout $ROOT $REPO
+
+
+cd $DIST/$REPO
+git checkout $COMMIT
+
+# submodules (TODO if exists)
+git submodule init
+git submodule update
+
+# Some housekeeping
+rm -Rf .git
+find . -name '.git' -delete
+find . -name '.gitmodules' -delete
+
+# Create a brand-new git repo for dist
+git init
+git add .
+
+# Commit (TODO configure user/email)
+git commit --quiet --author="Git <git@localhost>" -m "Single commit repo of commit:$COMMIT"
