@@ -20,12 +20,13 @@ To make a dist, run `git mkdist` in git repo root you want make a dist from. Dis
      
 ## Configuration
 
-git-mkdist uses a few git config variables prefixed with `mkdist.`
+A few git config variables are used
 
-* mkdist.email, mkdist.name - author email/name to be used in resulting git repo
-* mkdist.keep-dists=(true|false) - Keep `.dists` contnet while creating new dists. Default is `false`
+* mkdist.email, mkdist.name - author email/name to be used in resulting git repo. Default author string is 'gitmkdist <gitmkdist@localhost>'
+* mkdist.keep-dists=(true|false) - Keep `.dists` content while creating new dists. Default is `false`
 
 # TODO
 
 * Config var to specify target repo (dev/test/production)
 * Get target commit as command line option
+* Autoupdate script from github
