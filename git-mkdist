@@ -11,15 +11,25 @@ test -d $ROOT/.git || (echo "Must be launched in GIT repo root"; exit 1)
 DIST=$ROOT/.dist
 
 COMMIT=$(git rev-parse HEAD)
+COMMIT_DESCRIPTION=$(git describe || git rev-parse HEAD)
 
-REPO=single-commit
+REPO=single-commit-$COMMIT_DESCRIPTION
 
-rm -Rf $DIST
+COMMIT_MSG_FILE=$DIST/COMMIT_MSG-$COMMIT_DESCRIPTION
+
+AUTHOR="$(git config mkdist.name || echo 'gitmkdist') <$(git config mkdist.email || echo 'gitmkdist@localhost')>"
+
+
+[ "$(git config mkdist.keep-dists)" != "true" ] && rm -Rf $DIST
+
 mkdir -p $DIST
 
 cd $DIST
+
+rm -Rf $REPO
 git clone --no-hardlinks --progress --no-checkout $ROOT $REPO
 
+echo "Single commit repo\n\ncommit:$COMMIT\n$COMMIT_DESCRIPTION" > $COMMIT_MSG_FILE
 
 cd $DIST/$REPO
 git checkout $COMMIT
@@ -37,5 +47,5 @@ find . -name '.gitmodules' -delete
 git init
 git add .
 
-# Commit (TODO configure user/email)
-git commit --quiet --author="Git <git@localhost>" -m "Single commit repo of commit:$COMMIT"
+# Commit
+git commit --quiet --author="$AUTHOR" --file=$COMMIT_MSG_FILE 
